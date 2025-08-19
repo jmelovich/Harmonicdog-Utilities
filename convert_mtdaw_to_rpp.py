@@ -395,8 +395,16 @@ def write_rpp(
             # Positions in seconds based on project sample rate
             pos_sec = r['realStart'] / float(sr)
             len_sec = r['realLength'] / float(sr)
-            fadein_sec = max(0.0, r.get('fadeA', 0) / float(sr))
-            fadeout_sec = max(0.0, r.get('fadeB', 0) / float(sr))
+            # Convert region fades (stored as sample counts at project rate) to seconds
+            fadein_sec = max(0.0, float(r.get('fadeA', 0)) / float(sr))
+            fadeout_sec = max(0.0, float(r.get('fadeB', 0)) / float(sr))
+            # Clamp fades to valid ranges
+            if fadein_sec > len_sec:
+                fadein_sec = len_sec
+            if fadeout_sec > len_sec:
+                fadeout_sec = len_sec
+            if fadein_sec + fadeout_sec > len_sec:
+                fadeout_sec = max(0.0, len_sec - fadein_sec)
             item_amp = ScalarToAmplitude(float(r.get('volumeScalar', DBtoMM(0.0))))
             muted_flag = 1 if r.get('muted', False) else 0
 
@@ -408,9 +416,9 @@ def write_rpp(
             lines.append(f"      POSITION {pos_sec:.12g}")
             lines.append(f"      LENGTH {len_sec:.12g}")
             lines.append(f"      MUTE {muted_flag}")
-            # REAPER expects FADEIN/FADEOUT with additional parameters; use defaults
-            lines.append(f"      FADEIN {fadein_sec:.12g} 0 0 1 0 0 0")
-            lines.append(f"      FADEOUT {fadeout_sec:.12g} 0 0 1 0 0 0")
+            # REAPER expects FADEIN/FADEOUT with additional parameters; duration is the 2nd field
+            lines.append(f"      FADEIN 1 {fadein_sec:.12g} 0 1 0 0 0")
+            lines.append(f"      FADEOUT 1 {fadeout_sec:.12g} 0 1 0 0 0")
             lines.append(f"      VOLPAN {item_amp:.12g} 0 -1 -1 1")
             lines.append(f"      SOFFS {soff_sec:.12g}")
 

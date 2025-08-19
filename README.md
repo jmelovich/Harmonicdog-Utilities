@@ -20,7 +20,7 @@ pip install crcmod
 ### Reaper Tools
 ***
 **convert_mtdaw_to_rpp.py**
-Convert a MultiTrackDAW project folder (`.mtdaw`) to a REAPER project (`.rpp`). Cross-platform.
+Convert a MultiTrackDAW project folder (or project archive/zip) to a REAPER project (`.rpp`). Cross-platform.
 
 Default behavior:
 - Creates a bundle folder named `<project>_Reaper` next to the input (or zip). Inside it, writes `<project>.rpp` and copies all referenced WAVs into `Media/`, updating item paths accordingly.
