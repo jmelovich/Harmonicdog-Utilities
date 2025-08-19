@@ -253,7 +253,12 @@ def normalize_tracks(deser_root: object) -> List[dict]:
         soloed = bool(t.get('soloed', False))
         cv = t.get('controlValues', {}) if isinstance(t.get('controlValues', {}), dict) else {}
         volume_scalar = scalar_from_int_field(cv, 'vol2', 1.0)
-        pan_scalar = scalar_from_int_field(cv, 'pan2', 0.0) * 2.0 - 1.0  # stored as [0,1] -> [-1,1]
+        # 'pan2' is stored as a fixed-point int representing [-1, 1]. Convert directly and clamp.
+        pan_scalar = scalar_from_int_field(cv, 'pan2', 0.0)
+        if pan_scalar < -1.0:
+            pan_scalar = -1.0
+        elif pan_scalar > 1.0:
+            pan_scalar = 1.0
         send_a = scalar_from_int_field(cv, 'send2a', 0.0)
         send_b = scalar_from_int_field(cv, 'send2b', 0.0)
 
