@@ -44,6 +44,18 @@ Notes:
 - Requires `project.plist`, `Tracks2.plist` (or `Tracks.plist`), and the `Bins/` folder inside the `.mtdaw` directory (or within the zip with the same structure).
 - On Windows/macOS/Linux, `nska_deserialize` enables reading the archived `Tracks2.plist` without PyObjC.
 
+Supported features:
+- Creates REAPER tracks with the original track names and order
+- Transfers track mute/solo states
+- Transfers track volume and pan to REAPER `VOLPAN`
+- Places media items with correct positions and lengths
+- Applies per-item gain from region volume and per-item fades (fade-in/out)
+- Preserves source offsets via `SOFFS` for regions that start within a bin
+- Sets project sample rate, and writes a global tempo and time signature marker at start
+- Copies referenced WAVs from the project's `Bins/` into a `Media/` folder next to the `.rpp`
+- Rewrites item source paths to be relative to the project and sets `RECORD_PATH` to `Media`
+- Gracefully skips regions whose bins are missing
+
 Limitations:
 - Effects: Track compressor/EQ settings from MultiTrackDAW are not currently mapped to REAPER FX. The converter does not insert ReaComp/ReaEQ or set their parameters.
 - Automation: Time-varying automation (volume, pan, sends, FX params) is not exported. Only static per-track volume/pan, and per-item gain/fades are applied.
